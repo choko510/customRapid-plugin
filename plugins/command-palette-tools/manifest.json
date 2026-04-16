@@ -5,6 +5,7 @@
   "description": "Adds extra productivity actions and a toolbar shortcut for command palette workflows.",
   "pluginVersion": "1.0.0",
   "kinds": ["ui", "operation"],
+  "tags": ["productivity", "command-palette", "workflow"],
   "capabilities": ["ui.toolbar", "ui.commandPalette"],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/command-palette-tools/index.mjs"
 }
