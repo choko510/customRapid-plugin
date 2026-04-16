@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "issues-pane-tools",
+  "name": "Issues Pane Tools",
+  "description": "Adds quick actions for opening quality issue workflows.",
+  "pluginVersion": "1.0.0",
+  "kinds": ["ui", "operation"],
+  "capabilities": ["ui.commandPalette", "ui.panes.issues"],
+  "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/issues-pane-tools/index.mjs"
+}

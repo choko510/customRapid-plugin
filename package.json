@@ -1,0 +1,15 @@
+{
+  "name": "customrapid-plugin-registry",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Plugin registry and plugin distribution repo for Rapid Plugin Manager",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "validate": "node ./scripts/validate-registry.mjs",
+    "check": "npm run validate"
+  },
+  "license": "MIT"
+}

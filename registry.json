@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "plugins": [
+    {
+      "id": "command-palette-tools",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/command-palette-tools/manifest.json"
+    },
+    {
+      "id": "rapid-layer-tools",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/rapid-layer-tools/manifest.json"
+    },
+    {
+      "id": "issues-pane-tools",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/issues-pane-tools/manifest.json"
+    }
+  ],
+  "revoked": []
+}

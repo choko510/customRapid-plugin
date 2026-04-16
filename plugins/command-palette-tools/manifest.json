@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "command-palette-tools",
+  "name": "Command Palette Tools",
+  "description": "Adds extra productivity actions and a toolbar shortcut for command palette workflows.",
+  "pluginVersion": "1.0.0",
+  "kinds": ["ui", "operation"],
+  "capabilities": ["ui.toolbar", "ui.commandPalette"],
+  "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/command-palette-tools/index.mjs"
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "id": "rapid-layer-tools",
+  "name": "Rapid Layer Tools",
+  "description": "Adds quick actions for toggling Rapid AI layers.",
+  "pluginVersion": "1.0.0",
+  "kinds": ["ui", "operation"],
+  "capabilities": ["ui.toolbar", "map.layers"],
+  "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/rapid-layer-tools/index.mjs"
+}
