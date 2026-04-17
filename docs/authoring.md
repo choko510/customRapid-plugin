@@ -40,6 +40,8 @@
 ## 4. 検証
 
 ```bash
+npm run lint
+npm run test
 npm run validate
 ```
 

@@ -3,9 +3,9 @@ export function enable(api) {
   const toggleRapidLayer = () => {
     const isEnabled = scene?.layers?.get('rapid')?.enabled;
     if (isEnabled) {
-      scene.disableLayers('rapid');
+      scene?.disableLayers('rapid');
     } else {
-      scene.enableLayers('rapid');
+      scene?.enableLayers('rapid');
     }
   };
 

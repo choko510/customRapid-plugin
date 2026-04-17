@@ -1,4 +1,4 @@
-name: Validate Plugin Registry
+name: Plugin CI
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  validate:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,6 +16,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
 
       - name: Validate registry
         run: npm run validate
