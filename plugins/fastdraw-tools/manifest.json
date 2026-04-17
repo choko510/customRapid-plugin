@@ -5,20 +5,30 @@
   "ja-name": "FastDraw ツール",
   "description": "Adds a FastDraw tracing mode for quickly sketching and simplifying OSM ways.",
   "ja-description": "OSM ウェイをすばやくトレースして簡略化できる FastDraw モードを追加します。",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "kinds": ["ui", "operation"],
   "tags": ["drawing", "trace", "geometry", "productivity"],
   "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
   "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/fastdraw-tools.md",
   "usage": [
-    "Enable the plugin and start FastDraw mode with Shift+F (or toolbar button).",
-    "Draw points with click/drag, then press Enter to review simplification.",
-    "Press Enter to commit, or Ctrl+Enter/Cmd+Enter to commit with clipboard tags."
+    "Enable the plugin and start FastDraw mode with Shift+F (or the FastDraw toolbar button).",
+    "In capture mode, click to place points, hold Shift while dragging to sample many points, and press Space to append at the current cursor position.",
+    "Press A to switch geometry target between line and area before finalizing.",
+    "Press Enter to open simplification review, then use ArrowUp/ArrowDown to increase/decrease epsilon.",
+    "In review mode, drag points to adjust shape, Ctrl/Cmd+Click to toggle fixed points, and Shift+Click to remove a point/segment.",
+    "Press Backspace/Delete to remove the latest point from the current draft.",
+    "Press Enter to commit as a normal OSM way, or Ctrl+Enter/Cmd+Enter to commit and apply tags from clipboard text (key=value lines or JSON object).",
+    "If one way is preselected, press Shift+F twice to import and resimplify it; final replacement intentionally drops original tags."
   ],
   "ja-usage": [
-    "プラグインを有効化し、Shift+F（またはツールバーボタン）で FastDraw モードを開始します。",
-    "クリック/ドラッグで点を追加し、Enter で簡略化レビューへ進みます。",
-    "Enter で確定、Ctrl+Enter/Cmd+Enter でクリップボードタグ付き確定ができます。"
+    "プラグインを有効化し、Shift+F（または FastDraw ツールバーボタン）で FastDraw モードを開始します。",
+    "キャプチャ中はクリックで点追加、Shift を押しながらドラッグで連続サンプリング、Space で現在カーソル位置に点追加できます。",
+    "A キーでライン/エリアの作成対象を切り替えられます。",
+    "Enter で簡略化レビューへ進み、ArrowUp/ArrowDown で epsilon（簡略化強度）を調整します。",
+    "レビュー中は点ドラッグで形状調整、Ctrl/Cmd+Click で固定点切替、Shift+Click で点/線分削除ができます。",
+    "Backspace/Delete で現在ドラフトの直前ポイントを削除します。",
+    "Enter で通常の OSM ウェイとして確定、Ctrl+Enter/Cmd+Enter でクリップボードタグ（key=value 行または JSON）を貼り付けて確定します。",
+    "1 本のウェイを選択している場合は Shift+F を 2 回押すと再簡略化できます（置換時に元タグは意図的に削除されます）。"
   ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/fastdraw-tools/index.mjs"
 }

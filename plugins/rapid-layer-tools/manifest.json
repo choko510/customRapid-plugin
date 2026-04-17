@@ -11,12 +11,16 @@
   "capabilities": ["ui.toolbar", "map.layers"],
   "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/rapid-layer-tools.md",
   "usage": [
-    "Enable the plugin and click the AI button in the top toolbar to toggle Rapid layers.",
-    "You can also run \"Toggle Rapid AI Layers\" from plugin commands."
+    "Enable the plugin from Plugin Manager.",
+    "Use the AI toolbar button to quickly toggle Rapid AI layers on/off while mapping.",
+    "You can also run \"Toggle Rapid AI Layers\" from plugin commands when working from the command palette.",
+    "This plugin is useful for repeatedly switching between base map-only editing and AI-assisted tracing."
   ],
   "ja-usage": [
-    "プラグインを有効化し、上部ツールバーの AI ボタンで Rapid レイヤーを切り替えます。",
-    "またはプラグインコマンドから「Rapid AIレイヤー切替」を実行できます。"
+    "Plugin Manager でプラグインを有効化します。",
+    "上部ツールバーの AI ボタンで、編集中に Rapid AI レイヤーを素早く ON/OFF できます。",
+    "コマンドパレット運用時は、プラグインコマンドの「Rapid AIレイヤー切替」からも実行できます。",
+    "通常地図だけで編集する作業と AI 補助トレース作業を頻繁に切り替える用途を想定しています。"
   ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/rapid-layer-tools/index.mjs"
 }

@@ -11,12 +11,16 @@
   "capabilities": ["ui.commandPalette", "ui.panes.issues"],
   "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/issues-pane-tools.md",
   "usage": [
-    "Enable the plugin and run \"Open Issues Pane\" from plugin commands.",
-    "The command opens the Issues pane for QA workflows."
+    "Enable the plugin from Plugin Manager.",
+    "Run \"Open Issues Pane\" from plugin commands to open QA issues immediately.",
+    "Use it during validation passes when you need to jump in/out of the Issues pane repeatedly.",
+    "This plugin focuses on quicker quality-check workflows without manual pane navigation."
   ],
   "ja-usage": [
-    "プラグインを有効化し、プラグインコマンドから「Issueペインを開く」を実行します。",
-    "コマンド実行で品質確認用の Issue ペインを開けます。"
+    "Plugin Manager でプラグインを有効化します。",
+    "プラグインコマンドの「Issueペインを開く」を実行すると、品質確認用の Issues ペインをすぐ開けます。",
+    "検証作業で Issues ペインを何度も開閉するワークフロー向けです。",
+    "手動でペインを探す手間を減らし、品質チェックを高速化する目的のプラグインです。"
   ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/issues-pane-tools/index.mjs"
 }

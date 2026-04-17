@@ -244,6 +244,24 @@ function dedupeConsecutive(points) {
   return next;
 }
 
+export function buildWayNodes(nodeIDs, geometry = 'line') {
+  const next = Array.isArray(nodeIDs) ? nodeIDs.filter(Boolean) : [];
+  if (!next.length) return null;
+
+  if (geometry !== 'area') {
+    return next;
+  }
+
+  const uniqueNodeCount = new Set(next).size;
+  if (uniqueNodeCount < 3) return null;
+
+  if (next[0] !== next[next.length - 1]) {
+    next.push(next[0]);
+  }
+
+  return next;
+}
+
 export function parseClipboardTags(text) {
   if (typeof text !== 'string') return {};
   const raw = text.trim();
@@ -290,11 +308,14 @@ class FastDrawController {
     this._registeredDisposers = [];
     this._active = false;
     this._phase = 'capture';
+    this._geometry = 'line';
     this._awaitingSelectedWayConfirm = false;
     this._replaceWayID = null;
     this._selectedWayCandidateID = null;
     this._isPointerDown = false;
     this._pointerMoved = false;
+    this._downPoint = null;
+    this._pointerDownScreen = null;
     this._draggingReviewIndex = null;
     this._finalizing = false;
 
@@ -308,6 +329,7 @@ class FastDrawController {
     this._previewPath = null;
     this._previewDots = null;
     this._previewAnchors = null;
+    this._suspendedBehaviors = new Map();
 
     this._keydown = this._keydown.bind(this);
     this._pointerdown = this._pointerdown.bind(this);
@@ -344,6 +366,14 @@ class FastDrawController {
       keywords: 'fastdraw settings epsilon simplify',
       shortcut: 'Q',
       run: () => this.openSettings()
+    });
+
+    registerCommand({
+      id: 'toggle-fastdraw-geometry',
+      label: 'FastDraw Toggle Area/Line',
+      keywords: 'fastdraw area line polygon close',
+      shortcut: 'A',
+      run: () => this.toggleGeometry()
     });
 
     registerToolbarButton({
@@ -395,6 +425,7 @@ class FastDrawController {
     this._active = true;
     this._phase = 'capture';
     this.context.enter('browse');
+    this._suspendBehaviors(['select', 'drag', 'lasso']);
 
     const selectedWayID = this._selectedWayFromContext();
     if (selectedWayID) {
@@ -402,7 +433,7 @@ class FastDrawController {
       this._awaitingSelectedWayConfirm = true;
       this._notify('FastDraw: Shift+F をもう一度押すと選択中のウェイを再簡略化します（タグは削除されます）', 'info');
     } else {
-      this._notify('FastDraw: キャプチャ開始 (ドラッグ/クリック/Space)。Enterで簡略化レビューへ。', 'info');
+      this._notify('FastDraw: キャプチャ開始 (クリック/Space + Shiftドラッグ)。Aでライン/エリア切替。', 'info');
     }
 
     this._bindPointerEvents();
@@ -412,6 +443,7 @@ class FastDrawController {
 
   deactivateMode(options = {}) {
     if (!this._active) return;
+    this._restoreBehaviors();
     this._unbindPointerEvents();
     this._destroyPreview();
     this._resetSessionState();
@@ -444,13 +476,24 @@ class FastDrawController {
     }
   }
 
+  toggleGeometry() {
+    if (!this._active) return;
+    this._geometry = this._geometry === 'area' ? 'line' : 'area';
+    const label = this._geometry === 'area' ? 'area' : 'line';
+    this._notify(`FastDraw: geometry = ${label}`, 'info');
+    this._draw();
+  }
+
   _resetSessionState() {
     this._phase = 'capture';
+    this._geometry = 'line';
     this._awaitingSelectedWayConfirm = false;
     this._replaceWayID = null;
     this._selectedWayCandidateID = null;
     this._isPointerDown = false;
     this._pointerMoved = false;
+    this._downPoint = null;
+    this._pointerDownScreen = null;
     this._draggingReviewIndex = null;
     this._finalizing = false;
     this._rawPoints = [];
@@ -458,6 +501,27 @@ class FastDrawController {
     this._fixedRawIndices = new Set();
     this._fixedReviewIndices = new Set();
     this._lastPointerEvent = null;
+  }
+
+  _suspendBehaviors(behaviorIDs) {
+    for (const behaviorID of behaviorIDs) {
+      const behavior = this.context.behaviors?.[behaviorID];
+      if (!behavior || this._suspendedBehaviors.has(behaviorID)) continue;
+      this._suspendedBehaviors.set(behaviorID, behavior.enabled);
+      if (behavior.enabled) {
+        behavior.disable();
+      }
+    }
+  }
+
+  _restoreBehaviors() {
+    for (const [behaviorID, wasEnabled] of this._suspendedBehaviors) {
+      const behavior = this.context.behaviors?.[behaviorID];
+      if (behavior && wasEnabled && !behavior.enabled) {
+        behavior.enable();
+      }
+    }
+    this._suspendedBehaviors.clear();
   }
 
   _bindPointerEvents() {
@@ -482,7 +546,7 @@ class FastDrawController {
     if (this._inEditableField(e)) return;
 
     if (e.code === 'KeyF' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       this.toggleMode();
       return;
     }
@@ -490,20 +554,26 @@ class FastDrawController {
     if (!this._active) return;
 
     if (e.code === 'KeyQ' && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       this.openSettings();
       return;
     }
 
+    if (e.code === 'KeyA' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      this._consumeKeyEvent(e);
+      this.toggleGeometry();
+      return;
+    }
+
     if (e.code === 'Space' && this._phase === 'capture') {
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       this._appendRawFromLastEvent({ force: true, markFixed: false });
       this._draw();
       return;
     }
 
     if (e.key === 'Backspace' || e.key === 'Delete') {
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       this._removeLastPoint();
       this._draw();
       return;
@@ -511,7 +581,7 @@ class FastDrawController {
 
     if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
       if (this._phase !== 'review') return;
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       const factor = this.settings.epsilonStepFactor;
       if (e.key === 'ArrowUp') {
         this.settings.epsilonPx = clamp(this.settings.epsilonPx * factor, 0.25, 200);
@@ -526,7 +596,7 @@ class FastDrawController {
     }
 
     if (e.key === 'Enter') {
-      e.preventDefault();
+      this._consumeKeyEvent(e);
       if (this._phase === 'capture') {
         this._enterReview();
       } else if (this._phase === 'review') {
@@ -538,9 +608,9 @@ class FastDrawController {
   _pointerdown(e) {
     if (!this._active) return;
     this._lastPointerEvent = e;
-    this._stopPixiEvent(e);
 
     if (this._phase === 'review') {
+      this._stopPixiEvent(e);
       this._handleReviewPointerDown(e);
       this._draw();
       return;
@@ -548,9 +618,8 @@ class FastDrawController {
 
     this._isPointerDown = true;
     this._pointerMoved = false;
-    const markFixed = this._hasFixedModifier(e);
-    this._appendRawFromEvent(e, { force: true, markFixed });
-    this._draw();
+    this._downPoint = this._pointFromEvent(e);
+    this._pointerDownScreen = this._eventMapCoord(e)?.screen ?? null;
   }
 
   _pointermove(e) {
@@ -558,13 +627,26 @@ class FastDrawController {
     this._lastPointerEvent = e;
 
     if (this._phase === 'review' && this._draggingReviewIndex !== null) {
+      this._stopPixiEvent(e);
       this._moveDraggedReviewPoint(e);
       this._draw();
       return;
     }
 
     if (this._phase === 'capture' && this._isPointerDown) {
-      this._pointerMoved = true;
+      const screen = this._eventMapCoord(e)?.screen;
+      const dragDistance = (screen && this._pointerDownScreen) ? distance2D(screen, this._pointerDownScreen) : 0;
+      const movedEnough = dragDistance >= 4;
+
+      if (!e.shiftKey) {
+        this._pointerMoved = this._pointerMoved || movedEnough;
+        return;
+      }
+
+      if (movedEnough && !this._pointerMoved && this._downPoint) {
+        this._appendRawPoint(this._downPoint, { force: true, markFixed: false });
+      }
+      this._pointerMoved = this._pointerMoved || movedEnough;
       this._appendRawFromEvent(e, { force: false, markFixed: false });
       this._draw();
     }
@@ -575,6 +657,7 @@ class FastDrawController {
     this._lastPointerEvent = e;
 
     if (this._phase === 'review') {
+      this._stopPixiEvent(e);
       this._draggingReviewIndex = null;
       return;
     }
@@ -585,6 +668,8 @@ class FastDrawController {
     }
     this._isPointerDown = false;
     this._pointerMoved = false;
+    this._downPoint = null;
+    this._pointerDownScreen = null;
   }
 
   _handleReviewPointerDown(e) {
@@ -726,8 +811,9 @@ class FastDrawController {
       return;
     }
     this._phase = 'review';
+    this._suspendBehaviors(['mapInteraction']);
     this._rebuildReviewFromRaw();
-    this._notify('FastDraw: レビュー中 (↑/↓で簡略化、Enterで確定、Ctrl+Enterでタグ貼付)', 'info');
+    this._notify('FastDraw: レビュー中 (↑/↓で簡略化、Aでライン/エリア切替、Enterで確定)', 'info');
     this._draw();
   }
 
@@ -763,8 +849,9 @@ class FastDrawController {
       }
 
       const finalPoints = dedupeConsecutive(this._reviewPoints);
-      if (finalPoints.length < 2) {
-        this._notify('FastDraw: ウェイ確定には2点以上必要です', 'error');
+      const minPoints = this._geometry === 'area' ? 3 : 2;
+      if (finalPoints.length < minPoints) {
+        this._notify(`FastDraw: ${this._geometry === 'area' ? 'エリア' : 'ウェイ'}確定には${minPoints}点以上必要です`, 'error');
         return;
       }
 
@@ -793,7 +880,13 @@ class FastDrawController {
         actions.push(Rapid.actionDeleteWay(this._replaceWayID));
       }
 
-      const way = Rapid.osmWay({ tags, nodes: nodeIDs });
+      const wayNodes = buildWayNodes(nodeIDs, this._geometry);
+      if (!wayNodes) {
+        this._notify('FastDraw: エリア確定には3つ以上の異なる点が必要です', 'error');
+        return;
+      }
+
+      const way = Rapid.osmWay({ tags, nodes: wayNodes });
       actions.push(Rapid.actionAddEntity(way));
 
       editor.beginTransaction();
@@ -804,8 +897,8 @@ class FastDrawController {
       });
       editor.endTransaction();
 
-      this.context.enter('select-osm', { selection: { osm: [way.id] }, newFeature: Object.keys(tags).length === 0 });
       this.deactivateMode({ silent: true });
+      this.context.enter('select-osm', { selection: { osm: [way.id] }, newFeature: Object.keys(tags).length === 0 });
       this._notify('FastDraw: ウェイを作成しました', 'info');
     } catch (err) {
       this._notify(`FastDraw: ${err.message}`, 'error');
@@ -843,8 +936,10 @@ class FastDrawController {
     this._awaitingSelectedWayConfirm = false;
     this._selectedWayCandidateID = null;
     this._phase = 'review';
+    this._geometry = way.isClosed() ? 'area' : 'line';
+    this._suspendBehaviors(['mapInteraction']);
     this._rebuildReviewFromRaw();
-    this._notify('FastDraw: 選択ウェイを読み込みました。Enterで置き換えます（タグは削除されます）', 'info');
+    this._notify(`FastDraw: 選択ウェイを読み込みました (${this._geometry})。Enterで置き換えます（タグは削除されます）`, 'info');
     this._draw();
   }
 
@@ -954,6 +1049,12 @@ class FastDrawController {
     e?.stopPropagation?.();
   }
 
+  _consumeKeyEvent(e) {
+    e?.preventDefault?.();
+    e?.stopPropagation?.();
+    e?.stopImmediatePropagation?.();
+  }
+
   _ensurePreview() {
     if (!canUseDOM() || this._previewWrap) return;
     const containerNode = this.context.container?.().node?.();
@@ -1024,8 +1125,12 @@ class FastDrawController {
     const pathD = screenPoints
       .map((point, idx) => `${idx === 0 ? 'M' : 'L'}${point[0]} ${point[1]}`)
       .join(' ');
-    this._previewPath.setAttribute('d', pathD);
+    const isArea = this._geometry === 'area' && screenPoints.length >= 3;
+    this._previewPath.setAttribute('d', isArea ? `${pathD} Z` : pathD);
     this._previewPath.setAttribute('stroke', this._phase === 'review' ? '#52c41a' : '#ff4d4f');
+    this._previewPath.setAttribute('fill', isArea
+      ? (this._phase === 'review' ? 'rgba(82, 196, 26, 0.18)' : 'rgba(255, 77, 79, 0.14)')
+      : 'none');
 
     this._previewDots.textContent = '';
     this._previewAnchors.textContent = '';
@@ -1100,5 +1205,6 @@ export const __testing = {
   parseSettingsText,
   stringifySettings,
   simplifyPolyline,
-  parseClipboardTags
+  parseClipboardTags,
+  buildWayNodes
 };
