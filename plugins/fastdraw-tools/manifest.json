@@ -9,5 +9,16 @@
   "kinds": ["ui", "operation"],
   "tags": ["drawing", "trace", "geometry", "productivity"],
   "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
+  "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/fastdraw-tools.md",
+  "usage": [
+    "Enable the plugin and start FastDraw mode with Shift+F (or toolbar button).",
+    "Draw points with click/drag, then press Enter to review simplification.",
+    "Press Enter to commit, or Ctrl+Enter/Cmd+Enter to commit with clipboard tags."
+  ],
+  "ja-usage": [
+    "プラグインを有効化し、Shift+F（またはツールバーボタン）で FastDraw モードを開始します。",
+    "クリック/ドラッグで点を追加し、Enter で簡略化レビューへ進みます。",
+    "Enter で確定、Ctrl+Enter/Cmd+Enter でクリップボードタグ付き確定ができます。"
+  ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/fastdraw-tools/index.mjs"
 }

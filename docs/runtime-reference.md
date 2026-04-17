@@ -32,6 +32,8 @@ Rapid 側では概ね次の順で処理されます。
 - plugin metadata の本体
 - `kinds` と `capabilities` は UX と permission 表示の契約
 - `entrypoint` は直接 import される実行 URL
+- `docsURL` は Plugin Manager 詳細画面に表示するドキュメントリンク
+- `usage` / `ja-usage` は Plugin Manager 詳細画面の「操作方法」に表示する手順テキスト
 
 ## 3. Host API リファレンス
 

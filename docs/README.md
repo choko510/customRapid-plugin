@@ -9,3 +9,11 @@
 - `fastdraw-tools.md`  
   `fastdraw-tools` の操作仕様、内部ステート、設定項目、拡張ポイントをまとめた設計ドキュメントです。
 
+- `command-palette-tools.md`  
+  `command-palette-tools` の操作方法と追加されるコマンド/ツールバー項目をまとめたガイドです。
+
+- `rapid-layer-tools.md`  
+  `rapid-layer-tools` の操作方法と Rapid レイヤー切替フローをまとめたガイドです。
+
+- `issues-pane-tools.md`  
+  `issues-pane-tools` の操作方法と QA 用 Issue ペイン導線をまとめたガイドです。

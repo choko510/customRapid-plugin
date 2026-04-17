@@ -9,5 +9,14 @@
   "kinds": ["ui", "operation"],
   "tags": ["rapid", "layers", "imagery"],
   "capabilities": ["ui.toolbar", "map.layers"],
+  "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/rapid-layer-tools.md",
+  "usage": [
+    "Enable the plugin and click the AI button in the top toolbar to toggle Rapid layers.",
+    "You can also run \"Toggle Rapid AI Layers\" from plugin commands."
+  ],
+  "ja-usage": [
+    "プラグインを有効化し、上部ツールバーの AI ボタンで Rapid レイヤーを切り替えます。",
+    "またはプラグインコマンドから「Rapid AIレイヤー切替」を実行できます。"
+  ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/rapid-layer-tools/index.mjs"
 }

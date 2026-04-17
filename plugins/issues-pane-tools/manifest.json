@@ -9,5 +9,14 @@
   "kinds": ["ui", "operation"],
   "tags": ["qa", "issues", "validation"],
   "capabilities": ["ui.commandPalette", "ui.panes.issues"],
+  "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/issues-pane-tools.md",
+  "usage": [
+    "Enable the plugin and run \"Open Issues Pane\" from plugin commands.",
+    "The command opens the Issues pane for QA workflows."
+  ],
+  "ja-usage": [
+    "プラグインを有効化し、プラグインコマンドから「Issueペインを開く」を実行します。",
+    "コマンド実行で品質確認用の Issue ペインを開けます。"
+  ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/issues-pane-tools/index.mjs"
 }

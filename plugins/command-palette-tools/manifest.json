@@ -9,5 +9,14 @@
   "kinds": ["ui", "operation"],
   "tags": ["productivity", "command-palette", "workflow"],
   "capabilities": ["ui.toolbar", "ui.commandPalette"],
+  "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/command-palette-tools.md",
+  "usage": [
+    "Enable the plugin, then click the Cmd button in the top toolbar.",
+    "You can also run \"Open Command Palette\" from plugin commands."
+  ],
+  "ja-usage": [
+    "プラグインを有効化したあと、上部ツールバーの Cmd ボタンを押してください。",
+    "またはプラグインコマンドから「コマンドパレットを開く」を実行できます。"
+  ],
   "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/command-palette-tools/index.mjs"
 }

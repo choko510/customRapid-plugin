@@ -53,6 +53,17 @@ function ensureStringArray(value, fieldName) {
   }
 }
 
+function ensureOptionalHTTPURL(value, fieldName) {
+  if (value === undefined || value === null || value === '') return;
+  ensureString(value, fieldName);
+  ensureHTTPURL(value, fieldName);
+}
+
+function ensureOptionalStringArray(value, fieldName) {
+  if (value === undefined || value === null) return;
+  ensureStringArray(value, fieldName);
+}
+
 async function readJSON(filePath) {
   const raw = await fs.readFile(filePath, 'utf8');
   try {
@@ -68,6 +79,9 @@ async function validateManifest(manifestPath, entry) {
   ensureString(manifest.name, `manifest.name (${manifestPath})`);
   ensureString(manifest.entrypoint, `manifest.entrypoint (${manifestPath})`);
   ensureStringArray(manifest.kinds, `manifest.kinds (${manifestPath})`);
+  ensureOptionalHTTPURL(manifest.docsURL, `manifest.docsURL (${manifestPath})`);
+  ensureOptionalStringArray(manifest.usage, `manifest.usage (${manifestPath})`);
+  ensureOptionalStringArray(manifest['ja-usage'], `manifest.ja-usage (${manifestPath})`);
 
   for (const kind of manifest.kinds) {
     if (!ALLOWED_KINDS.has(kind)) {
