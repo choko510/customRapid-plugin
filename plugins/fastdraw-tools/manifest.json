@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "id": "fastdraw-tools",
+  "name": "FastDraw Tools",
+  "ja-name": "FastDraw ツール",
+  "description": "Adds a FastDraw tracing mode for quickly sketching and simplifying OSM ways.",
+  "ja-description": "OSM ウェイをすばやくトレースして簡略化できる FastDraw モードを追加します。",
+  "pluginVersion": "1.0.0",
+  "kinds": ["ui", "operation"],
+  "tags": ["drawing", "trace", "geometry", "productivity"],
+  "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
+  "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/fastdraw-tools/index.mjs"
+}

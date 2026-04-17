@@ -12,6 +12,10 @@
     {
       "id": "issues-pane-tools",
       "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/issues-pane-tools/manifest.json"
+    },
+    {
+      "id": "fastdraw-tools",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/fastdraw-tools/manifest.json"
     }
   ],
   "revoked": []
