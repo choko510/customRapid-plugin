@@ -35,6 +35,28 @@ test('node-merge-brush registers command and toolbar button', () => {
   assert.equal(toolbarButtons[0].id, 'toggle-node-merge-brush-mode');
 });
 
+test('node-merge-brush disables Shift+M when Rapid reserves it', () => {
+  const commands = [];
+  const api = {
+    context: {
+      systems: {
+        l10n: {
+          t: keyID => keyID === 'shortcuts.command.toggle_mapillary.key' ? 'M' : keyID
+        }
+      }
+    },
+    registerCommand: command => {
+      commands.push(command);
+      return () => {};
+    },
+    registerToolbarButton: () => () => {},
+    notify: () => {}
+  };
+
+  enable(api);
+  assert.equal(commands[0].shortcut, '');
+});
+
 test('node-merge-brush normalizes settings safely', () => {
   const settings = normalizeSettings({
     mergeDistancePx: 1000,

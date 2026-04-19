@@ -1,3 +1,10 @@
+import {
+  acquireToolLock,
+  createRapidShortcutConflictChecker,
+  createShortcutClaims,
+  releaseToolLock
+} from '../_shared/shortcut-guard.mjs';
+
 const SETTINGS_STORAGE_KEY = 'fastdraw.settings.v1';
 const SETTINGS_KEYS = [
   'epsilonPx',
@@ -306,6 +313,10 @@ class FastDrawController {
     this.settings = this._loadSettings();
 
     this._registeredDisposers = [];
+    this._shortcutClaims = createShortcutClaims('fastdraw-tools', {
+      isReservedShortcut: createRapidShortcutConflictChecker(this.context)
+    });
+    this._toggleShortcutEnabled = false;
     this._active = false;
     this._phase = 'capture';
     this._geometry = 'line';
@@ -339,6 +350,15 @@ class FastDrawController {
   }
 
   enable() {
+    const toggleShortcutClaim = this._shortcutClaims.claim('Shift+F', 'FastDraw Mode');
+    this._toggleShortcutEnabled = toggleShortcutClaim.ok;
+    if (!toggleShortcutClaim.ok && toggleShortcutClaim.owner) {
+      this._notify(
+        `FastDraw: Shift+F は "${toggleShortcutClaim.owner.label}" と競合するため無効化されました`,
+        'warning'
+      );
+    }
+
     const registerCommand = spec => {
       const disposer = this.api.registerCommand(spec);
       if (typeof disposer === 'function') {
@@ -356,7 +376,7 @@ class FastDrawController {
       id: 'toggle-fastdraw-mode',
       label: 'FastDraw Mode',
       keywords: 'fastdraw draw line trace simplify',
-      shortcut: 'Shift+F',
+      shortcut: this._toggleShortcutEnabled ? 'Shift+F' : '',
       run: () => this.toggleMode()
     });
 
@@ -392,6 +412,8 @@ class FastDrawController {
 
   disable() {
     this.deactivateMode({ silent: true });
+    this._shortcutClaims.releaseAll();
+    releaseToolLock('fastdraw-tools');
 
     this.context.systems.gfx?.off('draw', this._draw);
     if (canUseDOM()) {
@@ -421,6 +443,12 @@ class FastDrawController {
   activateMode() {
     if (this._active) return;
 
+    const lock = acquireToolLock('fastdraw-tools', 'FastDraw Mode');
+    if (!lock.ok) {
+      this._notify(`FastDraw: "${lock.owner.label}" の編集中は開始できません`, 'warning');
+      return;
+    }
+
     this._resetSessionState();
     this._active = true;
     this._phase = 'capture';
@@ -443,6 +471,7 @@ class FastDrawController {
 
   deactivateMode(options = {}) {
     if (!this._active) return;
+    releaseToolLock('fastdraw-tools');
     this._restoreBehaviors();
     this._unbindPointerEvents();
     this._destroyPreview();
@@ -545,7 +574,8 @@ class FastDrawController {
   _keydown(e) {
     if (this._inEditableField(e)) return;
 
-    if (e.code === 'KeyF' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    if (this._toggleShortcutEnabled && this._shortcutClaims.ownsEvent(e) &&
+      e.code === 'KeyF' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
       this._consumeKeyEvent(e);
       this.toggleMode();
       return;

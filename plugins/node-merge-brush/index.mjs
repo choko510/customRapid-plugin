@@ -1,3 +1,10 @@
+import {
+  acquireToolLock,
+  createRapidShortcutConflictChecker,
+  createShortcutClaims,
+  releaseToolLock
+} from '../_shared/shortcut-guard.mjs';
+
 const DEFAULT_SETTINGS = Object.freeze({
   mergeDistancePx: 10,
   minBrushRadiusPx: 24,
@@ -180,6 +187,10 @@ class NodeMergeBrushController {
     this.settings = normalizeSettings();
 
     this._registeredDisposers = [];
+    this._shortcutClaims = createShortcutClaims('node-merge-brush', {
+      isReservedShortcut: createRapidShortcutConflictChecker(this.context)
+    });
+    this._toggleShortcutEnabled = false;
     this._active = false;
     this._brushing = false;
     this._brushCenterScreen = null;
@@ -198,6 +209,15 @@ class NodeMergeBrushController {
   }
 
   enable() {
+    const toggleShortcutClaim = this._shortcutClaims.claim('Shift+M', 'Node Merge Brush');
+    this._toggleShortcutEnabled = toggleShortcutClaim.ok;
+    if (!toggleShortcutClaim.ok && toggleShortcutClaim.owner) {
+      this._notify(
+        `Node Merge Brush: Shift+M は "${toggleShortcutClaim.owner.label}" と競合するため無効化されました`,
+        'warning'
+      );
+    }
+
     const registerCommand = spec => {
       const disposer = this.api.registerCommand(spec);
       if (typeof disposer === 'function') {
@@ -215,7 +235,7 @@ class NodeMergeBrushController {
       id: 'toggle-node-merge-brush-mode',
       label: 'Node Merge Brush',
       keywords: 'merge snap connect align close nodes',
-      shortcut: 'Shift+M',
+      shortcut: this._toggleShortcutEnabled ? 'Shift+M' : '',
       run: () => this.toggleMode()
     });
 
@@ -235,6 +255,8 @@ class NodeMergeBrushController {
 
   disable() {
     this.deactivateMode({ silent: true });
+    this._shortcutClaims.releaseAll();
+    releaseToolLock('node-merge-brush');
 
     this.context.systems.gfx?.off('draw', this._drawPreview);
     if (canUseDOM()) {
@@ -258,6 +280,12 @@ class NodeMergeBrushController {
   activateMode() {
     if (this._active) return;
 
+    const lock = acquireToolLock('node-merge-brush', 'Node Merge Brush');
+    if (!lock.ok) {
+      this._notify(`Node Merge Brush: "${lock.owner.label}" の編集中は開始できません`, 'warning');
+      return;
+    }
+
     this._active = true;
     this._brushing = false;
     this._brushCenterScreen = null;
@@ -272,6 +300,7 @@ class NodeMergeBrushController {
 
   deactivateMode(options = {}) {
     if (!this._active) return;
+    releaseToolLock('node-merge-brush');
 
     this._restoreBehaviors();
     this._unbindPointerEvents();
@@ -305,6 +334,13 @@ class NodeMergeBrushController {
   }
 
   _keydown(e) {
+    if (this._toggleShortcutEnabled && this._shortcutClaims.ownsEvent(e) &&
+      e.code === 'KeyM' && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      this._consumeKeyEvent(e);
+      this.toggleMode();
+      return;
+    }
+
     if (!this._active) return;
 
     if (e.key === 'Escape') {

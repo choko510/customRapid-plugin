@@ -15,6 +15,13 @@
 1. Command: `toggle-node-merge-brush-mode`（`Shift+M`）
 2. Toolbar: `toggle-node-merge-brush-mode`（`Merge`）
 
+ショートカット競合対策:
+
+- `Shift+M` はプラグイン共通レジストリで排他取得します
+- Rapid 本体ショートカット予約と衝突する場合も `Shift+M` は自動無効化されます
+- すでに他プラグインが同じキーを使用中の場合、`Shift+M` は無効化されツールバー/コマンドパレットのみ利用可能になります
+- Node Merge Brush モード中はツールロックを取得し、他の編集系プラグインモードと同時起動しません
+
 ## 3. 操作フロー
 
 1. `Shift+M`（またはツールバー `Merge`）でモード開始

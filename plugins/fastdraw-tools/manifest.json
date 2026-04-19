@@ -11,7 +11,7 @@
   "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
   "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/fastdraw-tools.md",
   "usage": [
-    "Enable the plugin and start FastDraw mode with Shift+F (or the FastDraw toolbar button).",
+    "Enable the plugin and start FastDraw mode with Shift+F (or the FastDraw toolbar button). If Shift+F conflicts with Rapid or another plugin, use toolbar/command palette instead.",
     "In capture mode, click to place points, hold Shift while dragging to sample many points, and press Space to append at the current cursor position.",
     "Press A to switch geometry target between line and area before finalizing.",
     "Press Enter to open simplification review, then use ArrowUp/ArrowDown to increase/decrease epsilon.",
@@ -21,7 +21,7 @@
     "If one way is preselected, press Shift+F twice to import and resimplify it; final replacement intentionally drops original tags."
   ],
   "ja-usage": [
-    "プラグインを有効化し、Shift+F（または FastDraw ツールバーボタン）で FastDraw モードを開始します。",
+    "プラグインを有効化し、FastDraw ツールバーボタンまたは（Shift+F）で FastDraw モードを開始します。Shift+F が Rapid 本体または他プラグインと競合する場合はツールバー/コマンドパレットから開始します。",
     "キャプチャ中はクリックで点追加、Shift を押しながらドラッグで連続サンプリング、Space で現在カーソル位置に点追加できます。",
     "A キーでライン/エリアの作成対象を切り替えられます。",
     "Enter で簡略化レビューへ進み、ArrowUp/ArrowDown で epsilon（簡略化強度）を調整します。",

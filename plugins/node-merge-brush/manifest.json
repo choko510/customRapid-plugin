@@ -11,13 +11,13 @@
   "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
   "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/node-merge-brush.md",
   "usage": [
-    "Enable the plugin and start Node Merge Brush from Shift+M or the Merge toolbar button.",
+    "Enable the plugin and start Node Merge Brush from Shift+M or the Merge toolbar button. If Shift+M conflicts with Rapid or another plugin, use toolbar/command palette instead.",
     "Drag a circular range over the area you want to clean up.",
     "On release, close compatible nodes in the circle are automatically merged.",
     "Yellow rings in the preview indicate node candidates that can be merged."
   ],
   "ja-usage": [
-    "プラグインを有効化し、Shift+M または Merge ボタンで Node Merge Brush モードを開始します。",
+    "プラグインを有効化し、Shift+M または Merge ボタンで Node Merge Brush モードを開始します。Shift+M が Rapid 本体または他プラグインと競合する場合はツールバー/コマンドパレットから開始します。",
     "整えたい範囲をドラッグして円形で囲みます。",
     "マウスを離すと、円内の近接ノードが条件に合うもの同士で自動マージされます。",
     "プレビュー中の黄色リングは、マージ対象候補ノードを示します。"
