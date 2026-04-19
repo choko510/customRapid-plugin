@@ -17,3 +17,6 @@
 
 - `issues-pane-tools.md`  
   `issues-pane-tools` の操作方法と QA 用 Issue ペイン導線をまとめたガイドです。
+
+- `node-merge-brush.md`  
+  `node-merge-brush` の円形ブラシによる近接ノード自動マージ仕様をまとめた設計ドキュメントです。

@@ -16,6 +16,10 @@
     {
       "id": "fastdraw-tools",
       "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/fastdraw-tools/manifest.json"
+    },
+    {
+      "id": "node-merge-brush",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/node-merge-brush/manifest.json"
     }
   ],
   "revoked": []
