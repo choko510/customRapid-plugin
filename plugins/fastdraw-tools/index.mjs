@@ -549,6 +549,22 @@ export function buildWayNodes(nodeIDs, geometry = 'line') {
   return next;
 }
 
+export function buildWayTags(tags, geometry = 'line') {
+  const next = (tags && typeof tags === 'object') ? { ...tags } : {};
+  if (geometry === 'area' && !Object.prototype.hasOwnProperty.call(next, 'area')) {
+    next.area = 'yes';
+  }
+  return next;
+}
+
+export function isUndoShortcut(event) {
+  if (!event || event.altKey) return false;
+  if (!(event.ctrlKey || event.metaKey) || event.shiftKey) return false;
+  const code = String(event.code || '').toLowerCase();
+  const key = String(event.key || '').toLowerCase();
+  return code === 'keyz' || key === 'z';
+}
+
 export function parseClipboardTags(text) {
   if (typeof text !== 'string') return {};
   const raw = text.trim();
@@ -882,6 +898,13 @@ class FastDrawController {
       return;
     }
 
+    if (isUndoShortcut(e)) {
+      this._consumeKeyEvent(e);
+      this._removeLastPoint();
+      this._draw();
+      return;
+    }
+
     if (e.key === 'Backspace' || e.key === 'Delete') {
       this._consumeKeyEvent(e);
       this._removeLastPoint();
@@ -1196,7 +1219,8 @@ class FastDrawController {
         return;
       }
 
-      const way = Rapid.osmWay({ tags, nodes: wayNodes });
+      const wayTags = buildWayTags(tags, this._geometry);
+      const way = Rapid.osmWay({ tags: wayTags, nodes: wayNodes });
       actions.push(Rapid.actionAddEntity(way));
 
       editor.beginTransaction();
@@ -1516,5 +1540,7 @@ export const __testing = {
   stringifySettings,
   simplifyPolyline,
   parseClipboardTags,
-  buildWayNodes
+  buildWayNodes,
+  buildWayTags,
+  isUndoShortcut
 };

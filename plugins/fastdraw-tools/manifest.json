@@ -16,7 +16,7 @@
     "Press A to switch geometry target between line and area before finalizing.",
     "Press Enter to open simplification review, then use ArrowUp/ArrowDown to increase/decrease epsilon.",
     "In review mode, drag points to adjust shape, Ctrl/Cmd+Click to toggle fixed points, and Shift+Click to remove a point/segment.",
-    "Press Backspace/Delete to remove the latest point from the current draft.",
+    "Press Backspace/Delete or Ctrl+Z/Cmd+Z to remove the latest point from the current draft.",
     "Press Enter to commit as a normal OSM way, or Ctrl+Enter/Cmd+Enter to commit and apply tags from clipboard text (key=value lines or JSON object).",
     "If one way is preselected, press Shift+F twice to import and resimplify it; final replacement intentionally drops original tags."
   ],
@@ -26,7 +26,7 @@
     "A キーでライン/エリアの作成対象を切り替えられます。",
     "Enter で簡略化レビューへ進み、ArrowUp/ArrowDown で epsilon（簡略化強度）を調整します。",
     "レビュー中は点ドラッグで形状調整、Ctrl/Cmd+Click で固定点切替、Shift+Click で点/線分削除ができます。",
-    "Backspace/Delete で現在ドラフトの直前ポイントを削除します。",
+    "Backspace/Delete または Ctrl+Z/Cmd+Z で現在ドラフトの直前ポイントを削除します。",
     "Enter で通常の OSM ウェイとして確定、Ctrl+Enter/Cmd+Enter でクリップボードタグ（key=value 行または JSON）を貼り付けて確定します。",
     "1 本のウェイを選択している場合は Shift+F を 2 回押すと再簡略化できます（置換時に元タグは意図的に削除されます）。"
   ],

@@ -3,7 +3,14 @@ import assert from 'node:assert/strict';
 
 import { __testing, enable } from '../../plugins/fastdraw-tools/index.mjs';
 
-const { buildWayNodes, parseClipboardTags, parseSettingsText, simplifyPolyline } = __testing;
+const {
+  buildWayNodes,
+  buildWayTags,
+  isUndoShortcut,
+  parseClipboardTags,
+  parseSettingsText,
+  simplifyPolyline
+} = __testing;
 
 test('fastdraw-tools registers commands and toolbar button', () => {
   const commands = [];
@@ -67,4 +74,18 @@ test('fastdraw-tools builds way nodes for line/area', () => {
   assert.deepEqual(buildWayNodes(['n1', 'n2', 'n3'], 'line'), ['n1', 'n2', 'n3']);
   assert.deepEqual(buildWayNodes(['n1', 'n2', 'n3'], 'area'), ['n1', 'n2', 'n3', 'n1']);
   assert.equal(buildWayNodes(['n1', 'n1'], 'area'), null);
+});
+
+test('fastdraw-tools adds area=yes when finalizing area geometry', () => {
+  assert.deepEqual(buildWayTags({}, 'line'), {});
+  assert.deepEqual(buildWayTags({}, 'area'), { area: 'yes' });
+  assert.deepEqual(buildWayTags({ building: 'yes' }, 'area'), { building: 'yes', area: 'yes' });
+  assert.deepEqual(buildWayTags({ area: 'no' }, 'area'), { area: 'no' });
+});
+
+test('fastdraw-tools detects Ctrl/Cmd+Z undo shortcut without conflicting redo', () => {
+  assert.equal(isUndoShortcut({ code: 'KeyZ', ctrlKey: true, metaKey: false, altKey: false, shiftKey: false }), true);
+  assert.equal(isUndoShortcut({ key: 'z', ctrlKey: false, metaKey: true, altKey: false, shiftKey: false }), true);
+  assert.equal(isUndoShortcut({ code: 'KeyZ', ctrlKey: true, metaKey: false, altKey: false, shiftKey: true }), false);
+  assert.equal(isUndoShortcut({ code: 'KeyZ', ctrlKey: true, metaKey: false, altKey: true, shiftKey: false }), false);
 });
