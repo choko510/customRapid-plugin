@@ -20,3 +20,6 @@
 
 - `node-merge-brush.md`  
   `node-merge-brush` の円形ブラシによる近接ノード自動マージ仕様をまとめた設計ドキュメントです。
+
+- `photo-adjust-tools.md`  
+  `photo-adjust-tools` の写真位置補正モード、選択操作、GPS編集手順をまとめた設計ドキュメントです。

@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "id": "photo-adjust-tools",
+  "name": "Photo Adjust Tools",
+  "ja-name": "写真位置補正ツール",
+  "description": "Adds JOSM-like photo adjust operations for selecting, moving, placing and heading updates of photo markers.",
+  "ja-description": "JOSM の PhotoAdjust に近い、写真マーカーの選択・移動・配置・方向補正機能を追加します。",
+  "pluginVersion": "1.0.0",
+  "kinds": ["ui", "operation"],
+  "tags": ["photo", "geotag", "gps", "imagery", "productivity"],
+  "capabilities": ["ui.toolbar", "ui.commandPalette", "map.edit"],
+  "docsURL": "https://github.com/choko510/customRapid-plugin/blob/main/docs/photo-adjust-tools.md",
+  "usage": [
+    "Enable the plugin and toggle Photo Adjust Map Mode with Shift+P (or the Photo Adjust toolbar button).",
+    "When a photo layer is active, operations are scoped to that layer; in map mode, all loaded photo layers are editable unless a specific photo layer is active.",
+    "Click a photo to select it, Shift+Click to add another photo, and Ctrl+Shift+Click to add a range in capture order within the same layer.",
+    "Drag a selected photo (or selected group) to move it on the map.",
+    "Ctrl+Alt+Click on the map places the currently selected photo at the clicked position.",
+    "Ctrl+Click on the map sets the currently selected photo direction toward the clicked position.",
+    "Run \"Edit Photo GPS Data\" to edit latitude/longitude/direction via text input."
+  ],
+  "ja-usage": [
+    "プラグインを有効化し、Shift+P（または Photo Adjust ボタン）で Photo Adjust Map Mode を切り替えます。",
+    "写真レイヤーがアクティブな場合はそのレイヤーのみが対象、Map Mode ではアクティブレイヤーが優先され、未指定時は読み込み済み写真レイヤー全体が対象です。",
+    "写真をクリックで選択、Shift+クリックで追加選択、Ctrl+Shift+クリックで同一レイヤー内の範囲追加選択ができます。",
+    "選択した写真（または選択グループ）をドラッグして地図上で移動できます。",
+    "Ctrl+Alt+クリックで現在選択写真をクリック地点へ配置します。",
+    "Ctrl+クリックで現在選択写真の向きをクリック地点へ向けます。",
+    "「Edit Photo GPS Data」コマンドで緯度・経度・方向をテキスト入力で編集できます。"
+  ],
+  "entrypoint": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/photo-adjust-tools/index.mjs"
+}

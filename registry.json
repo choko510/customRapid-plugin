@@ -20,6 +20,10 @@
     {
       "id": "node-merge-brush",
       "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/node-merge-brush/manifest.json"
+    },
+    {
+      "id": "photo-adjust-tools",
+      "manifestURL": "https://raw.githubusercontent.com/choko510/customRapid-plugin/main/plugins/photo-adjust-tools/manifest.json"
     }
   ],
   "revoked": []
