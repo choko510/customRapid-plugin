@@ -602,6 +602,14 @@ function canUseDOM() {
   return Boolean(globalThis.window?.document);
 }
 
+function screenPointToLoc(viewport, point) {
+  if (!viewport?.unproject || !Array.isArray(point)) {
+    return point;
+  }
+
+  return viewport.unproject(point);
+}
+
 class FastDrawController {
   constructor(api) {
     this.api = api;
@@ -1288,8 +1296,7 @@ class FastDrawController {
   _pointFromEvent(e) {
     const mapCoord = this._eventMapCoord(e);
     if (!mapCoord) return null;
-    const viewport = this.context.viewport;
-    let loc = viewport.unproject(mapCoord.map);
+    let loc = mapCoord.map;
     let nodeID = null;
 
     const snapNode = this._snappedNodeFromEvent(e, mapCoord.screen);
@@ -1335,25 +1342,7 @@ class FastDrawController {
     if (!e?.global || !this.context?.viewport) return null;
     const viewport = this.context.viewport;
     const screen = [e.global.x, e.global.y];
-    const rotation = viewport.transform?.r ?? 0;
-    if (!rotation) {
-      return { screen, map: screen };
-    }
-
-    const center = viewport.center?.() ?? [0, 0];
-    const map = this._rotatePoint(screen, -rotation, center);
-    return { screen, map };
-  }
-
-  _rotatePoint(point, radians, center) {
-    const x = point[0] - center[0];
-    const y = point[1] - center[1];
-    const cos = Math.cos(radians);
-    const sin = Math.sin(radians);
-    return [
-      x * cos - y * sin + center[0],
-      x * sin + y * cos + center[1]
-    ];
+    return { screen, map: screenPointToLoc(viewport, screen) };
   }
 
   _inEditableField(e) {

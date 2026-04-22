@@ -13,7 +13,8 @@
 `enable(api)` で次を登録します。
 
 1. Command: `toggle-node-merge-brush-mode`（`Shift+M`）
-2. Toolbar: `toggle-node-merge-brush-mode`（`Merge`）
+2. Command: `toggle-node-merge-brush-merge`（自動マージ ON/OFF）
+3. Toolbar: `toggle-node-merge-brush-mode`（`Merge`）
 
 ショートカット競合対策:
 
@@ -29,6 +30,8 @@
 3. プレビューで候補ノードに黄色リング表示
 4. マウスを離すと、近接かつ条件適合ノードを自動マージ
 5. そのまま連続して次の範囲を処理可能（`Esc` か再度 `Shift+M` で終了）
+
+`Node Merge Auto Merge` コマンドで自動マージを ON/OFF できます。
 
 ## 4. マージ判定ルール
 
@@ -49,6 +52,7 @@
 - `minBrushRadiusPx`: `24`
 - `maxCandidateNodes`: `800`
 - `verticesOnly`: `true`
+- `mergeEnabled`: `true`
 
 ## 6. トランザクションと履歴
 

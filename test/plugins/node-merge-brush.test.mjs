@@ -29,8 +29,9 @@ test('node-merge-brush registers command and toolbar button', () => {
 
   enable(api);
 
-  assert.equal(commands.length, 1);
+  assert.equal(commands.length, 2);
   assert.equal(commands[0].id, 'toggle-node-merge-brush-mode');
+  assert.equal(commands[1].id, 'toggle-node-merge-brush-merge');
   assert.equal(toolbarButtons.length, 1);
   assert.equal(toolbarButtons[0].id, 'toggle-node-merge-brush-mode');
 });
@@ -69,6 +70,16 @@ test('node-merge-brush normalizes settings safely', () => {
   assert.equal(settings.minBrushRadiusPx, 2);
   assert.equal(settings.maxCandidateNodes, 50);
   assert.equal(settings.verticesOnly, false);
+  assert.equal(settings.mergeEnabled, true);
+});
+
+test('node-merge-brush accepts mergeEnabled=false', () => {
+  const settings = normalizeSettings({ mergeEnabled: false });
+  assert.equal(settings.mergeEnabled, false);
+});
+
+test('node-merge-brush default settings keep auto merge enabled', () => {
+  assert.equal(__testing.DEFAULT_SETTINGS.mergeEnabled, true);
 });
 
 test('node-merge-brush tag compatibility blocks z-axis mismatch', () => {

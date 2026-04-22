@@ -289,8 +289,11 @@ const DEFAULT_SETTINGS = Object.freeze({
   mergeDistancePx: 10,
   minBrushRadiusPx: 24,
   maxCandidateNodes: 800,
-  verticesOnly: true
+  verticesOnly: true,
+  mergeEnabled: true
 });
+
+const SETTINGS_STORAGE_KEY = 'node-merge-brush.settings.v1';
 
 const Z_AXIS_KEYS = ['layer', 'level', 'addr:housenumber', 'addr:unit'];
 
@@ -322,6 +325,9 @@ export function normalizeSettings(raw = {}) {
   }
   if (typeof raw.verticesOnly === 'boolean') {
     next.verticesOnly = raw.verticesOnly;
+  }
+  if (typeof raw.mergeEnabled === 'boolean') {
+    next.mergeEnabled = raw.mergeEnabled;
   }
 
   return next;
@@ -460,11 +466,19 @@ function canUseDOM() {
   return Boolean(globalThis.window?.document);
 }
 
+function screenPointToLoc(viewport, point) {
+  if (!viewport?.unproject || !Array.isArray(point)) {
+    return point;
+  }
+
+  return viewport.unproject(point);
+}
+
 class NodeMergeBrushController {
   constructor(api) {
     this.api = api;
     this.context = api.context;
-    this.settings = normalizeSettings();
+    this.settings = this._loadSettings();
 
     this._registeredDisposers = [];
     this._shortcutClaims = createShortcutClaims('node-merge-brush', {
@@ -519,6 +533,13 @@ class NodeMergeBrushController {
       run: () => this.toggleMode()
     });
 
+    registerCommand({
+      id: 'toggle-node-merge-brush-merge',
+      label: 'Node Merge Auto Merge',
+      keywords: 'merge toggle on off enable disable auto',
+      run: () => this.toggleMergeEnabled()
+    });
+
     registerToolbarButton({
       id: 'toggle-node-merge-brush-mode',
       label: 'Merge',
@@ -557,6 +578,18 @@ class NodeMergeBrushController {
     }
   }
 
+  toggleMergeEnabled() {
+    this.settings = {
+      ...this.settings,
+      mergeEnabled: !this.settings.mergeEnabled
+    };
+    this._saveSettings();
+    this._notify(
+      `Node Merge Brush: 自動マージ ${this.settings.mergeEnabled ? 'ON' : 'OFF'}`,
+      'info'
+    );
+  }
+
   activateMode() {
     if (this._active) return;
 
@@ -575,7 +608,10 @@ class NodeMergeBrushController {
     this._suspendBehaviors(['select', 'drag', 'lasso']);
     this._bindPointerEvents();
     this._ensurePreview();
-    this._notify('Node Merge Brush: ドラッグで範囲を指定してノードを自動マージします', 'info');
+    this._notify(
+      `Node Merge Brush: ドラッグで範囲を指定して${this.settings.mergeEnabled ? 'ノードを自動マージします' : '候補を表示します（自動マージ OFF）'}`,
+      'info'
+    );
   }
 
   deactivateMode(options = {}) {
@@ -689,6 +725,10 @@ class NodeMergeBrushController {
     const edge = this._brushCurrentScreen ?? center;
     if (!center || !edge) return;
 
+    if (!this.settings.mergeEnabled) {
+      return;
+    }
+
     const radiusPx = Math.max(this.settings.minBrushRadiusPx, distance2D(center, edge));
     const candidates = this._collectCandidateNodes(center, radiusPx, graph);
     if (candidates.length >= this.settings.maxCandidateNodes) {
@@ -780,7 +820,7 @@ class NodeMergeBrushController {
       [centerScreen[0] - radiusPx, centerScreen[1] + radiusPx]
     ];
 
-    const locs = corners.map(screen => viewport.unproject(this._mapPointFromScreen(screen)));
+    const locs = corners.map(screen => screenPointToLoc(viewport, screen));
     const lons = locs.map(loc => loc[0]);
     const lats = locs.map(loc => loc[1]);
 
@@ -793,24 +833,7 @@ class NodeMergeBrushController {
   _eventMapCoord(e) {
     if (!e?.global || !this.context?.viewport) return null;
     const screen = [e.global.x, e.global.y];
-    return { screen, map: this._mapPointFromScreen(screen) };
-  }
-
-  _mapPointFromScreen(screen) {
-    const viewport = this.context.viewport;
-    const rotation = viewport.transform?.r ?? 0;
-    if (!rotation) return screen;
-
-    const center = viewport.center?.() ?? [0, 0];
-    const x = screen[0] - center[0];
-    const y = screen[1] - center[1];
-    const cos = Math.cos(-rotation);
-    const sin = Math.sin(-rotation);
-
-    return [
-      x * cos - y * sin + center[0],
-      x * sin + y * cos + center[1]
-    ];
+    return { screen, map: screenPointToLoc(this.context.viewport, screen) };
   }
 
   _suspendBehaviors(behaviorIDs) {
@@ -932,6 +955,23 @@ class NodeMergeBrushController {
       ring.setAttribute('stroke-width', '2');
       this._previewNodes.appendChild(ring);
     }
+  }
+
+  _loadSettings() {
+    const storage = this.context.systems.storage;
+    const text = storage?.getItem?.(SETTINGS_STORAGE_KEY);
+    if (!text) return { ...DEFAULT_SETTINGS };
+
+    try {
+      return normalizeSettings(JSON.parse(text));
+    } catch {
+      return { ...DEFAULT_SETTINGS };
+    }
+  }
+
+  _saveSettings() {
+    const storage = this.context.systems.storage;
+    storage?.setItem?.(SETTINGS_STORAGE_KEY, JSON.stringify(normalizeSettings(this.settings)));
   }
 
   _notify(message, kind = 'info') {
